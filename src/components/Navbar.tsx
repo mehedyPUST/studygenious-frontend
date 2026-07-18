@@ -12,22 +12,6 @@ const Navbar = () => {
     const router = useRouter();
     const isLoggedIn = !!user;
 
-    const loggedOutLinks = [
-        { href: '/', label: 'Home' },
-        { href: '/explore', label: 'Explore' },
-        { href: '/login', label: 'Login' },
-    ];
-
-    const loggedInLinks = [
-        { href: '/', label: 'Home' },
-        { href: '/explore', label: 'Explore' },
-        { href: '/items/add', label: 'Add Plan' },
-        { href: '/items/manage', label: 'Manage' },
-        { href: '/recommendations', label: 'For You' },
-    ];
-
-    const links = isLoggedIn ? loggedInLinks : loggedOutLinks;
-
     const handleLogout = () => {
         logout();
         router.push('/');
@@ -44,23 +28,46 @@ const Navbar = () => {
                     </Link>
 
                     {/* Desktop Links */}
-                    <div className="hidden md:flex items-center gap-6">
-                        {links.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                className="text-slate-600 hover:text-primary-600 transition-colors"
-                            >
-                                {link.label}
-                            </Link>
-                        ))}
-                        {isLoggedIn && (
-                            <button
-                                onClick={handleLogout}
-                                className="ml-4 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
-                            >
-                                Logout
-                            </button>
+                    <div className="hidden md:flex items-center gap-4">
+                        {!isLoggedIn ? (
+                            <>
+                                <Link href="/explore" className="text-slate-600 hover:text-primary-600 transition-colors">
+                                    Explore
+                                </Link>
+                                <Link
+                                    href="/login"
+                                    className="px-4 py-2 border border-primary-500 text-primary-600 rounded-lg hover:bg-primary-50 transition-colors font-medium"
+                                >
+                                    Login
+                                </Link>
+                                <Link
+                                    href="/register"
+                                    className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
+                                >
+                                    Register
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                <Link href="/explore" className="text-slate-600 hover:text-primary-600 transition-colors">
+                                    Explore
+                                </Link>
+                                <Link href="/items/add" className="text-slate-600 hover:text-primary-600 transition-colors">
+                                    Add Plan
+                                </Link>
+                                <Link href="/items/manage" className="text-slate-600 hover:text-primary-600 transition-colors">
+                                    Manage
+                                </Link>
+                                <Link href="/recommendations" className="text-slate-600 hover:text-primary-600 transition-colors">
+                                    For You
+                                </Link>
+                                <button
+                                    onClick={handleLogout}
+                                    className="ml-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
+                                >
+                                    Logout
+                                </button>
+                            </>
                         )}
                     </div>
 
@@ -78,26 +85,28 @@ const Navbar = () => {
             {isOpen && (
                 <div className="md:hidden bg-white border-t">
                     <div className="px-4 py-3 space-y-2">
-                        {links.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                className="block text-slate-600 hover:text-primary-600 py-2"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                {link.label}
-                            </Link>
-                        ))}
-                        {isLoggedIn && (
-                            <button
-                                onClick={() => {
-                                    handleLogout();
-                                    setIsOpen(false);
-                                }}
-                                className="block w-full text-left text-red-500 py-2"
-                            >
-                                Logout
-                            </button>
+                        {!isLoggedIn ? (
+                            <>
+                                <Link href="/explore" className="block text-slate-600 hover:text-primary-600 py-2" onClick={() => setIsOpen(false)}>
+                                    Explore
+                                </Link>
+                                <Link href="/login" className="block text-primary-600 font-medium py-2" onClick={() => setIsOpen(false)}>
+                                    Login
+                                </Link>
+                                <Link href="/register" className="block w-full text-center bg-primary-600 text-white py-2 rounded-lg font-medium" onClick={() => setIsOpen(false)}>
+                                    Register
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                <Link href="/explore" className="block text-slate-600 hover:text-primary-600 py-2" onClick={() => setIsOpen(false)}>Explore</Link>
+                                <Link href="/items/add" className="block text-slate-600 hover:text-primary-600 py-2" onClick={() => setIsOpen(false)}>Add Plan</Link>
+                                <Link href="/items/manage" className="block text-slate-600 hover:text-primary-600 py-2" onClick={() => setIsOpen(false)}>Manage</Link>
+                                <Link href="/recommendations" className="block text-slate-600 hover:text-primary-600 py-2" onClick={() => setIsOpen(false)}>For You</Link>
+                                <button onClick={() => { handleLogout(); setIsOpen(false); }} className="block w-full text-left text-red-500 py-2">
+                                    Logout
+                                </button>
+                            </>
                         )}
                     </div>
                 </div>
