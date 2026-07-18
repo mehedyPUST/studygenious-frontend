@@ -8,6 +8,9 @@ interface User {
     email: string;
     name: string;
     avatar?: string;
+    googleId?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 interface AuthContextType {
@@ -28,64 +31,86 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // On mount, check for saved token and validate it (optional)
+    // Fetch full user profile from backend
+    const fetchProfile = useCallback(async () => {
+        try {
+            const data = await apiClient<{ success: boolean; data: User }>('/api/profile');
+            setUser(data.data);
+        } catch (err) {
+            console.error('Failed to fetch profile');
+        }
+    }, []);
+
+    // On mount, check for saved token and validate it
     useEffect(() => {
         const savedToken = localStorage.getItem('token');
         if (savedToken) {
             setToken(savedToken);
-            // You could validate the token by fetching /api/auth/me (if you add that endpoint)
-            // For now, we just trust it and set a minimal user object from token payload.
-            // We'll just set user to a placeholder; ideally decode JWT.
-            const payload = parseJwt(savedToken);
-            if (payload) {
-                setUser({ _id: payload.userId, email: payload.email, name: '' });
-            }
+            // Fetch the full profile after token is set
+            fetchProfile().finally(() => setIsLoading(false));
+        } else {
+            setIsLoading(false);
         }
-        setIsLoading(false);
-    }, []);
+    }, [fetchProfile]);
 
-    const handleLoginSuccess = (accessToken: string, refreshToken: string) => {
-        localStorage.setItem('token', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
-        setToken(accessToken);
-        // Decode access token to get user info
-        const payload = parseJwt(accessToken);
-        if (payload) {
-            setUser({ _id: payload.userId, email: payload.email, name: '' });
-        }
-    };
+    const handleLoginSuccess = useCallback(
+        (accessToken: string, refreshToken: string) => {
+            localStorage.setItem('token', accessToken);
+            localStorage.setItem('refreshToken', refreshToken);
+            setToken(accessToken);
+            // Fetch full profile after login
+            fetchProfile();
+        },
+        [fetchProfile]
+    );
 
-    const login = useCallback(async (email: string, password: string) => {
-        const data = await publicApi<{ success: boolean; data: { user: User; tokens: { accessToken: string; refreshToken: string } } }>(
-            '/api/auth/login',
-            { method: 'POST', body: JSON.stringify({ email, password }) }
-        );
-        handleLoginSuccess(data.data.tokens.accessToken, data.data.tokens.refreshToken);
-        setUser(data.data.user);
-    }, []);
+    const login = useCallback(
+        async (email: string, password: string) => {
+            const data = await publicApi<{
+                success: boolean;
+                data: { user: User; tokens: { accessToken: string; refreshToken: string } };
+            }>('/api/auth/login', {
+                method: 'POST',
+                body: JSON.stringify({ email, password }),
+            });
+            handleLoginSuccess(data.data.tokens.accessToken, data.data.tokens.refreshToken);
+        },
+        [handleLoginSuccess]
+    );
 
-    const register = useCallback(async (name: string, email: string, password: string) => {
-        const data = await publicApi<{ success: boolean; data: { user: User; tokens: { accessToken: string; refreshToken: string } } }>(
-            '/api/auth/register',
-            { method: 'POST', body: JSON.stringify({ name, email, password }) }
-        );
-        handleLoginSuccess(data.data.tokens.accessToken, data.data.tokens.refreshToken);
-        setUser(data.data.user);
-    }, []);
+    const register = useCallback(
+        async (name: string, email: string, password: string) => {
+            const data = await publicApi<{
+                success: boolean;
+                data: { user: User; tokens: { accessToken: string; refreshToken: string } };
+            }>('/api/auth/register', {
+                method: 'POST',
+                body: JSON.stringify({ name, email, password }),
+            });
+            handleLoginSuccess(data.data.tokens.accessToken, data.data.tokens.refreshToken);
+        },
+        [handleLoginSuccess]
+    );
 
-    const googleLogin = useCallback(async (idToken: string) => {
-        const data = await publicApi<{ success: boolean; data: { user: User; tokens: { accessToken: string; refreshToken: string } } }>(
-            '/api/auth/google',
-            { method: 'POST', body: JSON.stringify({ idToken }) }
-        );
-        handleLoginSuccess(data.data.tokens.accessToken, data.data.tokens.refreshToken);
-        setUser(data.data.user);
-    }, []);
+    const googleLogin = useCallback(
+        async (idToken: string) => {
+            const data = await publicApi<{
+                success: boolean;
+                data: { user: User; tokens: { accessToken: string; refreshToken: string } };
+            }>('/api/auth/google', {
+                method: 'POST',
+                body: JSON.stringify({ idToken }),
+            });
+            handleLoginSuccess(data.data.tokens.accessToken, data.data.tokens.refreshToken);
+        },
+        [handleLoginSuccess]
+    );
 
     const demoLogin = useCallback(async () => {
-        // Fetch demo credentials first
-        const creds = await publicApi<{ success: boolean; data: { email: string; password: string } }>('/api/auth/demo');
-        // Then login with those credentials
+        const creds = await publicApi<{
+            success: boolean;
+            data: { email: string; password: string };
+        }>('/api/auth/demo');
         await login(creds.data.email, creds.data.password);
     }, [login]);
 
@@ -97,7 +122,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, token, login, register, googleLogin, demoLogin, logout, isLoading }}>
+        <AuthContext.Provider
+            value={{
+                user,
+                token,
+                login,
+                register,
+                googleLogin,
+                demoLogin,
+                logout,
+                isLoading,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
@@ -119,7 +155,7 @@ function parseJwt(token: string): { userId: string; email: string } | null {
         const jsonPayload = decodeURIComponent(
             atob(base64)
                 .split('')
-                .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
                 .join('')
         );
         return JSON.parse(jsonPayload);

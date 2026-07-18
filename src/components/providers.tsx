@@ -5,16 +5,23 @@ import { useState } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider } from '@/context/AuthContext';
 
+const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
 export default function Providers({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(() => new QueryClient());
 
-    return (
+    const content = (
         <QueryClientProvider client={queryClient}>
-            <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
-                <AuthProvider>
-                    {children}
-                </AuthProvider>
-            </GoogleOAuthProvider>
+            <AuthProvider>
+                {children}
+            </AuthProvider>
         </QueryClientProvider>
     );
+
+    // Only wrap with Google provider if client ID is configured
+    if (googleClientId) {
+        return <GoogleOAuthProvider clientId={googleClientId}>{content}</GoogleOAuthProvider>;
+    }
+
+    return content;
 }

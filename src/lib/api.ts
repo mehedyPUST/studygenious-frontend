@@ -1,13 +1,54 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_BASE) {
+    throw new Error('NEXT_PUBLIC_API_URL is not defined. Please set it in your .env.local file.');
+}
 
 interface RequestOptions extends RequestInit {
     token?: string | null;
 }
 
+let isRefreshing = false;
+let refreshPromise: Promise<boolean> | null = null;
+
+async function refreshToken(): Promise<boolean> {
+    if (isRefreshing && refreshPromise) return refreshPromise;
+
+    isRefreshing = true;
+    refreshPromise = (async () => {
+        try {
+            const refreshTokenValue = localStorage.getItem('refreshToken');
+            if (!refreshTokenValue) return false;
+
+            const res = await fetch(`${API_BASE}/api/auth/refresh`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refreshToken: refreshTokenValue }),
+            });
+
+            if (!res.ok) return false;
+
+            const data = await res.json();
+            if (data.success) {
+                localStorage.setItem('token', data.data.tokens.accessToken);
+                localStorage.setItem('refreshToken', data.data.tokens.refreshToken);
+                return true;
+            }
+            return false;
+        } catch {
+            return false;
+        } finally {
+            isRefreshing = false;
+            refreshPromise = null;
+        }
+    })();
+
+    return refreshPromise;
+}
+
 async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     const { token, ...fetchOptions } = options;
 
-    // Use the Headers class for type-safe header manipulation
     const headers = new Headers(fetchOptions.headers);
     headers.set('Content-Type', 'application/json');
 
@@ -15,10 +56,28 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
         headers.set('Authorization', `Bearer ${token}`);
     }
 
-    const res = await fetch(`${API_BASE}${endpoint}`, {
-        ...fetchOptions,
-        headers,
-    });
+    const url = `${API_BASE.replace(/\/+$/, '')}${endpoint}`;
+
+    let res = await fetch(url, { ...fetchOptions, headers });
+
+    // If unauthorized and we have a token, try refreshing
+    if (res.status === 401 && token) {
+        const refreshed = await refreshToken();
+        if (refreshed) {
+            // Retry the request with new token
+            const newToken = localStorage.getItem('token');
+            headers.set('Authorization', `Bearer ${newToken}`);
+            res = await fetch(url, { ...fetchOptions, headers });
+        } else {
+            // Refresh failed – clear tokens and redirect to login
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+            if (typeof window !== 'undefined') {
+                window.location.href = '/login';
+            }
+            throw new Error('Session expired. Please login again.');
+        }
+    }
 
     if (!res.ok) {
         const error = await res.json().catch(() => ({ message: 'Something went wrong' }));
@@ -28,7 +87,6 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     return res.json();
 }
 
-// Client-side requests: auto-attach token from localStorage
 export function apiClient<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
     let token: string | null = null;
     if (typeof window !== 'undefined') {
@@ -37,7 +95,6 @@ export function apiClient<T = any>(endpoint: string, options: RequestInit = {}):
     return request<T>(endpoint, { ...options, token });
 }
 
-// Public requests (no token needed)
 export function publicApi<T = any>(endpoint: string, options: RequestInit = {}): Promise<T> {
     return request<T>(endpoint, options);
 }
