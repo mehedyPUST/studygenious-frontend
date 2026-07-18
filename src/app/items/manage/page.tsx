@@ -25,28 +25,6 @@ const DIFFICULTY_STYLES: Record<string, { bg: string; text: string; border: stri
     hard: { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200', dot: 'bg-rose-400' },
 };
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: { staggerChildren: 0.08 },
-    },
-};
-
-const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.4, ease: 'easeOut' },
-    },
-    exit: {
-        opacity: 0,
-        x: -50,
-        transition: { duration: 0.3 },
-    },
-};
-
 export default function ManagePlansPage() {
     const router = useRouter();
     const queryClient = useQueryClient();
@@ -101,7 +79,7 @@ export default function ManagePlansPage() {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.6, ease: 'easeOut' }}
                     className="max-w-7xl mx-auto px-4 relative z-10"
                 >
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -209,15 +187,17 @@ export default function ManagePlansPage() {
                                 <div className="col-span-2">Actions</div>
                             </div>
 
-                            <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-3">
+                            <div className="space-y-3">
                                 <AnimatePresence>
                                     {plans.map((plan) => {
                                         const diff = DIFFICULTY_STYLES[plan.difficulty] || DIFFICULTY_STYLES.easy;
                                         return (
                                             <motion.div
                                                 key={plan._id}
-                                                variants={cardVariants}
-                                                exit="exit"
+                                                initial={{ opacity: 0, y: 20 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, x: -50 }}
+                                                transition={{ duration: 0.4, ease: 'easeOut' }}
                                                 layout
                                                 whileHover={{ y: -2 }}
                                                 className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:shadow-emerald-100/30 hover:border-emerald-200 transition-all duration-300 overflow-hidden"
@@ -302,7 +282,7 @@ export default function ManagePlansPage() {
                                         );
                                     })}
                                 </AnimatePresence>
-                            </motion.div>
+                            </div>
                         </>
                     )}
                 </div>

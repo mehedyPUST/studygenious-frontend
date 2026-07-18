@@ -54,28 +54,6 @@ const features = [
     },
 ];
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-        },
-    },
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.5,
-            ease: 'easeOut',
-        },
-    },
-};
-
 export default function Features() {
     return (
         <section className="py-24 px-4 bg-white" id="features">
@@ -84,7 +62,7 @@ export default function Features() {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-50px' }}
+                    viewport={{ once: true }}
                     transition={{ duration: 0.6, ease: 'easeOut' }}
                     className="text-center mb-16"
                 >
@@ -100,20 +78,18 @@ export default function Features() {
                 </motion.div>
 
                 {/* Features Grid */}
-                <motion.div
-                    variants={containerVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, margin: '-30px' }}
-                    className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
-                >
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                     {features.map((feature, index) => {
                         const Icon = feature.icon;
                         return (
                             <motion.div
                                 key={index}
-                                variants={itemVariants}
-                                className={`group relative bg-white rounded-2xl p-6 sm:p-8 hover:shadow-xl transition-all duration-500 border border-gray-100 hover:border-emerald-200 hover:-translate-y-1 overflow-hidden`}
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.5, delay: index * 0.1, ease: 'easeOut' }}
+                                whileHover={{ y: -6 }}
+                                className={`group relative bg-white rounded-2xl p-6 sm:p-8 hover:shadow-xl transition-all duration-500 border border-gray-100 hover:border-emerald-200 overflow-hidden`}
                             >
                                 {/* Top gradient line */}
                                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -140,7 +116,7 @@ export default function Features() {
                             </motion.div>
                         );
                     })}
-                </motion.div>
+                </div>
             </div>
         </section>
     );

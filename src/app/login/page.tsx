@@ -253,18 +253,14 @@ export default function LoginPage() {
 
                         {process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && (
                             <div className="w-full flex justify-center">
-                                <div className="w-full max-w-[400px] border-2 border-gray-200 rounded-2xl overflow-hidden hover:border-emerald-300 transition-all bg-white">
-                                    <GoogleLogin
-                                        clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}
-                                        onSuccess={handleGoogleSuccess}
-                                        onError={() => setServerError('Google login failed')}
-                                        theme="outline"
-                                        size="large"
-                                        text="signin_with"
-                                        shape="rectangular"
-                                        width={400}
-                                    />
-                                </div>
+                                <GoogleLogin
+                                    onSuccess={handleGoogleSuccess}
+                                    onError={() => setServerError('Google login failed')}
+                                    theme="outline"
+                                    size="large"
+                                    text="signin_with"
+                                    shape="rectangular"
+                                />
                             </div>
                         )}
                     </motion.div>

@@ -33,28 +33,6 @@ const steps = [
     },
 ];
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.2,
-        },
-    },
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, y: 40 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.6,
-            ease: 'easeOut',
-        },
-    },
-};
-
 export default function HowItWorks() {
     return (
         <section className="py-24 px-4 bg-gray-50" id="how-it-works">
@@ -63,7 +41,7 @@ export default function HowItWorks() {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-50px' }}
+                    viewport={{ once: true }}
                     transition={{ duration: 0.6, ease: 'easeOut' }}
                     className="text-center mb-16"
                 >
@@ -79,13 +57,7 @@ export default function HowItWorks() {
                 </motion.div>
 
                 {/* Steps */}
-                <motion.div
-                    variants={containerVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, margin: '-30px' }}
-                    className="grid md:grid-cols-3 gap-8 lg:gap-12 relative"
-                >
+                <div className="grid md:grid-cols-3 gap-8 lg:gap-12 relative">
                     {/* Connecting line (desktop only) */}
                     <div className="hidden md:block absolute top-16 left-[20%] right-[20%] h-0.5 bg-gradient-to-r from-emerald-200 via-teal-200 to-emerald-200 -z-0" />
 
@@ -95,7 +67,10 @@ export default function HowItWorks() {
                         return (
                             <motion.div
                                 key={index}
-                                variants={itemVariants}
+                                initial={{ opacity: 0, y: 40 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.6, delay: index * 0.2, ease: 'easeOut' }}
                                 className="relative z-10 text-center group"
                             >
                                 {/* Step number badge */}
@@ -103,12 +78,7 @@ export default function HowItWorks() {
                                     initial={{ scale: 0 }}
                                     whileInView={{ scale: 1 }}
                                     viewport={{ once: true }}
-                                    transition={{
-                                        duration: 0.4,
-                                        delay: 0.3 + index * 0.2,
-                                        type: 'spring',
-                                        stiffness: 200,
-                                    }}
+                                    transition={{ type: 'spring', stiffness: 200, delay: 0.3 + index * 0.2 }}
                                     className="absolute -top-3 right-1/4 w-8 h-8 bg-white rounded-full border-2 border-emerald-200 flex items-center justify-center shadow-sm"
                                 >
                                     <span className="text-xs font-bold text-emerald-600">{step.step}</span>
@@ -120,9 +90,7 @@ export default function HowItWorks() {
                                     transition={{ type: 'spring', stiffness: 300 }}
                                     className={`w-20 h-20 sm:w-24 sm:h-24 mx-auto ${step.bgLight} ${step.textColor} rounded-full flex items-center justify-center mb-6 shadow-lg shadow-emerald-100 group-hover:shadow-xl group-hover:shadow-emerald-200 transition-shadow duration-300 relative`}
                                 >
-                                    {/* Ring animation */}
                                     <div className="absolute inset-0 rounded-full border-2 border-transparent group-hover:border-emerald-300 scale-110 opacity-0 group-hover:opacity-100 transition-all duration-500" />
-
                                     <Icon className="w-10 h-10 sm:w-12 sm:h-12" strokeWidth={1.8} />
                                 </motion.div>
 
@@ -145,7 +113,8 @@ export default function HowItWorks() {
                                 {!isLast && (
                                     <motion.div
                                         initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
+                                        whileInView={{ opacity: 1 }}
+                                        viewport={{ once: true }}
                                         transition={{ delay: 1 + index * 0.3 }}
                                         className="hidden md:flex justify-center mt-6 text-emerald-300"
                                     >
@@ -155,7 +124,7 @@ export default function HowItWorks() {
                             </motion.div>
                         );
                     })}
-                </motion.div>
+                </div>
             </div>
         </section>
     );

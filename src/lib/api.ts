@@ -1,8 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL;
-
-if (!API_BASE) {
-    throw new Error('NEXT_PUBLIC_API_URL is not defined. Please set it in your .env.local file.');
-}
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
 interface RequestOptions extends RequestInit {
     token?: string | null;
@@ -56,20 +52,18 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
         headers.set('Authorization', `Bearer ${token}`);
     }
 
-    const url = `${API_BASE.replace(/\/+$/, '')}${endpoint}`;
+    const baseUrl = API_BASE.replace(/\/+$/, '');
+    const url = `${baseUrl}${endpoint}`;
 
     let res = await fetch(url, { ...fetchOptions, headers });
 
-    // If unauthorized and we have a token, try refreshing
     if (res.status === 401 && token) {
         const refreshed = await refreshToken();
         if (refreshed) {
-            // Retry the request with new token
             const newToken = localStorage.getItem('token');
             headers.set('Authorization', `Bearer ${newToken}`);
             res = await fetch(url, { ...fetchOptions, headers });
         } else {
-            // Refresh failed – clear tokens and redirect to login
             localStorage.removeItem('token');
             localStorage.removeItem('refreshToken');
             if (typeof window !== 'undefined') {

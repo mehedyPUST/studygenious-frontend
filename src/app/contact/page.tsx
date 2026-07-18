@@ -34,23 +34,6 @@ const contactInfo = [
     },
 ];
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: { staggerChildren: 0.15 },
-    },
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, x: -30 },
-    visible: {
-        opacity: 1,
-        x: 0,
-        transition: { duration: 0.5, ease: 'easeOut' },
-    },
-};
-
 export default function ContactPage() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
@@ -94,7 +77,7 @@ export default function ContactPage() {
                     <motion.span
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.4 }}
+                        transition={{ duration: 0.4, ease: 'easeOut' }}
                         className="inline-block px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-[0.2em] mb-6 border border-emerald-200"
                     >
                         Contact
@@ -103,7 +86,7 @@ export default function ContactPage() {
                     <motion.h1
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.1 }}
+                        transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
                         className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight tracking-tight mb-4"
                     >
                         Get in{' '}
@@ -115,7 +98,7 @@ export default function ContactPage() {
                     <motion.p
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
+                        transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
                         className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed"
                     >
                         Have questions or feedback? We&apos;d love to hear from you.
@@ -127,26 +110,26 @@ export default function ContactPage() {
             <section className="py-16 md:py-20 px-4">
                 <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-10 lg:gap-16">
                     {/* Contact Info */}
-                    <motion.div
-                        variants={containerVariants}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: '-50px' }}
-                        className="space-y-6"
-                    >
+                    <div className="space-y-6">
                         {contactInfo.map((item, index) => {
                             const Icon = item.icon;
                             const Content = item.href ? 'a' : 'div';
                             const contentProps = item.href
-                                ? { href: item.href, target: item.href.startsWith('mailto') ? undefined : '_blank', rel: item.href.startsWith('mailto') ? undefined : 'noopener noreferrer' }
+                                ? {
+                                    href: item.href,
+                                    target: item.href.startsWith('mailto') ? undefined : '_blank',
+                                    rel: item.href.startsWith('mailto') ? undefined : 'noopener noreferrer',
+                                }
                                 : {};
 
                             return (
                                 <motion.div
                                     key={index}
-                                    variants={itemVariants}
+                                    initial={{ opacity: 0, x: -30 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.5, delay: index * 0.15, ease: 'easeOut' }}
                                     whileHover={{ x: 6 }}
-                                    transition={{ type: 'spring', stiffness: 300 }}
                                 >
                                     <Content
                                         {...(contentProps as any)}
@@ -176,7 +159,6 @@ export default function ContactPage() {
                             );
                         })}
 
-                        {/* Response time badge */}
                         <motion.div
                             initial={{ opacity: 0 }}
                             whileInView={{ opacity: 1 }}
@@ -189,13 +171,13 @@ export default function ContactPage() {
                                 We typically respond within 24 hours.
                             </p>
                         </motion.div>
-                    </motion.div>
+                    </div>
 
                     {/* Contact Form */}
                     <motion.div
                         initial={{ opacity: 0, y: 40 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: '-50px' }}
+                        viewport={{ once: true }}
                         transition={{ duration: 0.7, ease: 'easeOut' }}
                         className="bg-white rounded-3xl border border-emerald-100 shadow-sm shadow-emerald-100/30 p-6 sm:p-8"
                     >

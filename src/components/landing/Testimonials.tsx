@@ -33,28 +33,6 @@ const testimonials = [
     },
 ];
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.15,
-        },
-    },
-};
-
-const cardVariants = {
-    hidden: { opacity: 0, y: 40 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.6,
-            ease: 'easeOut',
-        },
-    },
-};
-
 export default function Testimonials() {
     return (
         <section className="py-24 px-4 bg-white" id="testimonials">
@@ -63,7 +41,7 @@ export default function Testimonials() {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-50px' }}
+                    viewport={{ once: true }}
                     transition={{ duration: 0.6, ease: 'easeOut' }}
                     className="text-center mb-16"
                 >
@@ -79,19 +57,15 @@ export default function Testimonials() {
                 </motion.div>
 
                 {/* Testimonials Grid */}
-                <motion.div
-                    variants={containerVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, margin: '-30px' }}
-                    className="grid md:grid-cols-3 gap-6 sm:gap-8"
-                >
+                <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
                     {testimonials.map((t, i) => (
                         <motion.div
                             key={i}
-                            variants={cardVariants}
+                            initial={{ opacity: 0, y: 40 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, delay: i * 0.15, ease: 'easeOut' }}
                             whileHover={{ y: -6 }}
-                            transition={{ type: 'spring', stiffness: 300 }}
                             className="group relative bg-gray-50 rounded-2xl p-6 sm:p-8 border border-gray-100 hover:border-emerald-200 hover:shadow-xl hover:shadow-emerald-100/50 transition-all duration-500"
                         >
                             {/* Quote icon */}
@@ -129,7 +103,6 @@ export default function Testimonials() {
 
                             {/* Author */}
                             <div className="flex items-center gap-4">
-                                {/* Avatar */}
                                 <div
                                     className={`w-10 h-10 sm:w-12 sm:h-12 ${t.color} rounded-2xl flex items-center justify-center font-bold text-sm sm:text-base group-hover:scale-110 transition-transform duration-300`}
                                 >
@@ -146,7 +119,7 @@ export default function Testimonials() {
                             </div>
                         </motion.div>
                     ))}
-                </motion.div>
+                </div>
             </div>
         </section>
     );

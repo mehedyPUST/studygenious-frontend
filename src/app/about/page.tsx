@@ -4,40 +4,11 @@ import { BookOpen, Target, Eye, Sparkles, Users, Shield, ArrowRight } from 'luci
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
-const fadeUpVariants = {
-    hidden: { opacity: 0, y: 40 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.6, ease: 'easeOut' },
-    },
-};
-
-const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.15,
-        },
-    },
-};
-
-const cardVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.5, ease: 'easeOut' },
-    },
-};
-
 export default function AboutPage() {
     return (
         <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
             {/* Header */}
             <section className="relative py-20 md:py-24 bg-white border-b border-emerald-100 overflow-hidden">
-                {/* Background decoration */}
                 <div className="absolute top-10 right-10 w-64 h-64 bg-emerald-100/30 rounded-full blur-3xl" />
                 <div className="absolute bottom-10 left-10 w-48 h-48 bg-teal-100/30 rounded-full blur-3xl" />
 
@@ -77,18 +48,14 @@ export default function AboutPage() {
             {/* Mission & Vision */}
             <section className="py-16 md:py-20 px-4">
                 <div className="max-w-7xl mx-auto">
-                    <motion.div
-                        variants={staggerContainer}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: '-50px' }}
-                        className="grid md:grid-cols-2 gap-8"
-                    >
+                    <div className="grid md:grid-cols-2 gap-8">
                         {/* Mission */}
                         <motion.div
-                            variants={cardVariants}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5, ease: 'easeOut' }}
                             whileHover={{ y: -6 }}
-                            transition={{ type: 'spring', stiffness: 300 }}
                             className="group relative bg-white rounded-3xl p-8 sm:p-10 border border-emerald-100 shadow-sm hover:shadow-xl hover:shadow-emerald-100/50 transition-all duration-500 overflow-hidden"
                         >
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -111,9 +78,11 @@ export default function AboutPage() {
 
                         {/* Vision */}
                         <motion.div
-                            variants={cardVariants}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5, ease: 'easeOut' }}
                             whileHover={{ y: -6 }}
-                            transition={{ type: 'spring', stiffness: 300 }}
                             className="group relative bg-white rounded-3xl p-8 sm:p-10 border border-teal-100 shadow-sm hover:shadow-xl hover:shadow-teal-100/50 transition-all duration-500 overflow-hidden"
                         >
                             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-teal-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -133,7 +102,7 @@ export default function AboutPage() {
                             </p>
                             <div className="absolute -bottom-4 -right-4 w-20 h-20 bg-teal-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl" />
                         </motion.div>
-                    </motion.div>
+                    </div>
                 </div>
             </section>
 
@@ -143,8 +112,8 @@ export default function AboutPage() {
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: '-50px' }}
-                        transition={{ duration: 0.6 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, ease: 'easeOut' }}
                         className="text-center mb-14"
                     >
                         <span className="inline-block text-emerald-600 text-sm font-semibold uppercase tracking-[0.2em] bg-emerald-100/60 px-4 py-1.5 rounded-full mb-4">
@@ -155,13 +124,7 @@ export default function AboutPage() {
                         </h2>
                     </motion.div>
 
-                    <motion.div
-                        variants={staggerContainer}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true, margin: '-30px' }}
-                        className="grid md:grid-cols-3 gap-6 sm:gap-8"
-                    >
+                    <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
                         {[
                             {
                                 icon: Sparkles,
@@ -192,9 +155,11 @@ export default function AboutPage() {
                             return (
                                 <motion.div
                                     key={i}
-                                    variants={cardVariants}
+                                    initial={{ opacity: 0, y: 30 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.5, delay: i * 0.1, ease: 'easeOut' }}
                                     whileHover={{ y: -6 }}
-                                    transition={{ type: 'spring', stiffness: 300 }}
                                     className={`group relative bg-gray-50 rounded-3xl p-6 sm:p-8 border border-gray-100 hover:shadow-xl hover:border-emerald-200 transition-all duration-500 overflow-hidden`}
                                 >
                                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -215,7 +180,7 @@ export default function AboutPage() {
                                 </motion.div>
                             );
                         })}
-                    </motion.div>
+                    </div>
                 </div>
             </section>
 
@@ -224,7 +189,7 @@ export default function AboutPage() {
                 <motion.div
                     initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-50px' }}
+                    viewport={{ once: true }}
                     transition={{ duration: 0.7, ease: 'easeOut' }}
                     className="max-w-4xl mx-auto text-center bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-700 rounded-3xl p-10 sm:p-12 md:p-16 relative overflow-hidden shadow-2xl shadow-emerald-200/50"
                 >

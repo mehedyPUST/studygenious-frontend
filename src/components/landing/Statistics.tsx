@@ -36,28 +36,6 @@ function AnimatedCounter({ target, isVisible }: { target: number; isVisible: boo
     return <span>{count.toLocaleString()}</span>;
 }
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.15,
-        },
-    },
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.6,
-            ease: 'easeOut',
-        },
-    },
-};
-
 export default function Statistics() {
     const sectionRef = useRef<HTMLElement>(null);
     const isInView = useInView(sectionRef, { once: true, margin: '-100px' });
@@ -82,18 +60,15 @@ export default function Statistics() {
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:64px_64px] -z-10" />
 
             <div className="max-w-7xl mx-auto relative z-10">
-                <motion.div
-                    variants={containerVariants}
-                    initial="hidden"
-                    animate={isInView ? 'visible' : 'hidden'}
-                    className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12"
-                >
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
                     {stats.map((stat, index) => {
                         const Icon = stat.icon;
                         return (
                             <motion.div
                                 key={index}
-                                variants={itemVariants}
+                                initial={{ opacity: 0, y: 30 }}
+                                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                                transition={{ duration: 0.6, delay: index * 0.15, ease: 'easeOut' }}
                                 className="text-center text-white group"
                             >
                                 {/* Icon */}
@@ -121,7 +96,7 @@ export default function Statistics() {
                             </motion.div>
                         );
                     })}
-                </motion.div>
+                </div>
             </div>
         </section>
     );

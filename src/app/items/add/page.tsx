@@ -55,7 +55,6 @@ export default function AddPlanPage() {
     const selectedDifficulty = watch('difficulty');
     const diffStyle = DIFFICULTY_COLORS[selectedDifficulty] || DIFFICULTY_COLORS.easy;
 
-    // Redirect if not logged in
     useEffect(() => {
         if (!authLoading && (!user || !token)) {
             router.push('/login');
@@ -124,11 +123,6 @@ export default function AddPlanPage() {
         }
     };
 
-    const fadeUp = {
-        hidden: { opacity: 0, y: 30 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
-    };
-
     return (
         <main className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50">
             {/* Page Header */}
@@ -137,7 +131,7 @@ export default function AddPlanPage() {
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
+                    transition={{ duration: 0.6, ease: 'easeOut' }}
                     className="max-w-4xl mx-auto px-4 text-center relative z-10"
                 >
                     <span className="inline-block px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold uppercase tracking-[0.2em] mb-4 border border-emerald-200">
@@ -162,7 +156,6 @@ export default function AddPlanPage() {
             {/* Form & AI Sidebar */}
             <section className="py-12 px-4">
                 <div className="max-w-7xl mx-auto">
-                    {/* Messages */}
                     {serverError && (
                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mb-6 p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-sm font-medium max-w-4xl mx-auto">
                             {serverError}
@@ -176,7 +169,12 @@ export default function AddPlanPage() {
 
                     <div className="grid lg:grid-cols-3 gap-8">
                         {/* Main Form */}
-                        <motion.div variants={fadeUp} initial="hidden" animate="visible" className="lg:col-span-2">
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.6, ease: 'easeOut' }}
+                            className="lg:col-span-2"
+                        >
                             <div className="bg-white rounded-3xl border border-emerald-100 shadow-sm shadow-emerald-100/30 p-6 sm:p-8 md:p-10">
                                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                                     {/* Title */}
@@ -314,7 +312,7 @@ export default function AddPlanPage() {
                         <motion.div
                             initial={{ opacity: 0, x: 30 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.6, delay: 0.2 }}
+                            transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
                             className="lg:col-span-1"
                         >
                             <div className="bg-white rounded-3xl border border-emerald-100 shadow-sm shadow-emerald-100/30 p-6 sm:p-8 sticky top-24">

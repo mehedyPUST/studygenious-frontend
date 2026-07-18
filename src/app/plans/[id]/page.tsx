@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/context/AuthContext';
 import { publicApi, apiClient } from '@/lib/api';
-import { Star, Clock, BookOpen, User, Send, Loader2, ArrowLeft, AlertCircle, Calendar, ChevronRight } from 'lucide-react';
+import { Star, Clock, BookOpen, User, Send, Loader2, ArrowLeft, AlertCircle, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -35,21 +35,6 @@ const DIFFICULTY_STYLES: Record<string, { bg: string; text: string; border: stri
     easy: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', dot: 'bg-emerald-400' },
     medium: { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200', dot: 'bg-amber-400' },
     hard: { bg: 'bg-rose-50', text: 'text-rose-700', border: 'border-rose-200', dot: 'bg-rose-400' },
-};
-
-const fadeUp = {
-    hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } },
-};
-
-const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-};
-
-const cardVariant = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
 };
 
 export default function PlanDetailsPage() {
@@ -145,7 +130,12 @@ export default function PlanDetailsPage() {
                         </Link>
                     </motion.div>
 
-                    <motion.div variants={fadeUp} initial="hidden" animate="visible" className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, ease: 'easeOut' }}
+                        className="flex flex-col md:flex-row md:items-start md:justify-between gap-6"
+                    >
                         <div className="flex-1">
                             <div className="flex flex-wrap items-center gap-3 mb-3">
                                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${diff.bg} ${diff.text} ${diff.border}`}>
@@ -196,13 +186,25 @@ export default function PlanDetailsPage() {
                     {/* Main */}
                     <div className="lg:col-span-2 space-y-8">
                         {/* Description */}
-                        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="bg-white rounded-3xl border border-emerald-100 shadow-sm p-6 sm:p-8">
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, ease: 'easeOut' }}
+                            className="bg-white rounded-3xl border border-emerald-100 shadow-sm p-6 sm:p-8"
+                        >
                             <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 mb-4">About This Plan</h2>
                             <div className="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line">{plan.fullDescription}</div>
                         </motion.div>
 
                         {/* Reviews */}
-                        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="bg-white rounded-3xl border border-emerald-100 shadow-sm p-6 sm:p-8">
+                        <motion.div
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, ease: 'easeOut' }}
+                            className="bg-white rounded-3xl border border-emerald-100 shadow-sm p-6 sm:p-8"
+                        >
                             <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 mb-6">Reviews ({reviews.length})</h2>
 
                             {user && token ? (
@@ -246,9 +248,16 @@ export default function PlanDetailsPage() {
                             ) : reviews.length === 0 ? (
                                 <p className="text-sm text-gray-500 text-center py-8">No reviews yet. Be the first!</p>
                             ) : (
-                                <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }} className="space-y-4">
+                                <div className="space-y-4">
                                     {reviews.map((review) => (
-                                        <motion.div key={review._id} variants={cardVariant} className="p-4 sm:p-5 bg-gray-50 rounded-2xl border border-gray-100">
+                                        <motion.div
+                                            key={review._id}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            whileInView={{ opacity: 1, y: 0 }}
+                                            viewport={{ once: true }}
+                                            transition={{ duration: 0.4, ease: 'easeOut' }}
+                                            className="p-4 sm:p-5 bg-gray-50 rounded-2xl border border-gray-100"
+                                        >
                                             <div className="flex items-center justify-between mb-3">
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-8 h-8 bg-emerald-100 rounded-full flex items-center justify-center"><User className="w-4 h-4 text-emerald-600" /></div>
@@ -260,13 +269,19 @@ export default function PlanDetailsPage() {
                                             <p className="text-xs text-gray-400 mt-2">{formatDate(review.createdAt)}</p>
                                         </motion.div>
                                     ))}
-                                </motion.div>
+                                </div>
                             )}
                         </motion.div>
                     </div>
 
                     {/* Sidebar */}
-                    <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="lg:col-span-1">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, ease: 'easeOut' }}
+                        className="lg:col-span-1"
+                    >
                         <div className="bg-white rounded-3xl border border-emerald-100 shadow-sm p-6 sm:p-8 sticky top-24">
                             <h3 className="text-lg sm:text-xl font-extrabold text-gray-900 mb-5">Related Plans</h3>
                             {relatedPlans.length === 0 ? (
@@ -276,7 +291,7 @@ export default function PlanDetailsPage() {
                                     {relatedPlans.map((related) => {
                                         const rd = DIFFICULTY_STYLES[related.difficulty] || DIFFICULTY_STYLES.easy;
                                         return (
-                                            <motion.div key={related._id} whileHover={{ x: 4 }} transition={{ type: 'spring', stiffness: 300 }}>
+                                            <motion.div key={related._id} whileHover={{ x: 4 }}>
                                                 <Link href={`/plans/${related._id}`} className="block p-4 bg-gray-50 rounded-2xl border border-gray-100 hover:border-emerald-200 hover:shadow-md transition-all group">
                                                     <h4 className="font-bold text-sm text-gray-900 group-hover:text-emerald-700 transition-colors line-clamp-2">{related.title}</h4>
                                                     <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
