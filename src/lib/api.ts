@@ -7,13 +7,12 @@ interface RequestOptions extends RequestInit {
 async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     const { token, ...fetchOptions } = options;
 
-    const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-        ...fetchOptions.headers,
-    };
+    // Use the Headers class for type-safe header manipulation
+    const headers = new Headers(fetchOptions.headers);
+    headers.set('Content-Type', 'application/json');
 
     if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+        headers.set('Authorization', `Bearer ${token}`);
     }
 
     const res = await fetch(`${API_BASE}${endpoint}`, {
