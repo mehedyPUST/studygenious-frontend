@@ -1,0 +1,129 @@
+'use client';
+
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { apiClient, publicApi } from '@/lib/api';
+
+interface User {
+    _id: string;
+    email: string;
+    name: string;
+    avatar?: string;
+}
+
+interface AuthContextType {
+    user: User | null;
+    token: string | null;
+    login: (email: string, password: string) => Promise<void>;
+    register: (name: string, email: string, password: string) => Promise<void>;
+    googleLogin: (idToken: string) => Promise<void>;
+    demoLogin: () => Promise<void>;
+    logout: () => void;
+    isLoading: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+    const [user, setUser] = useState<User | null>(null);
+    const [token, setToken] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // On mount, check for saved token and validate it (optional)
+    useEffect(() => {
+        const savedToken = localStorage.getItem('token');
+        if (savedToken) {
+            setToken(savedToken);
+            // You could validate the token by fetching /api/auth/me (if you add that endpoint)
+            // For now, we just trust it and set a minimal user object from token payload.
+            // We'll just set user to a placeholder; ideally decode JWT.
+            const payload = parseJwt(savedToken);
+            if (payload) {
+                setUser({ _id: payload.userId, email: payload.email, name: '' });
+            }
+        }
+        setIsLoading(false);
+    }, []);
+
+    const handleLoginSuccess = (accessToken: string, refreshToken: string) => {
+        localStorage.setItem('token', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        setToken(accessToken);
+        // Decode access token to get user info
+        const payload = parseJwt(accessToken);
+        if (payload) {
+            setUser({ _id: payload.userId, email: payload.email, name: '' });
+        }
+    };
+
+    const login = useCallback(async (email: string, password: string) => {
+        const data = await publicApi<{ success: boolean; data: { user: User; tokens: { accessToken: string; refreshToken: string } } }>(
+            '/api/auth/login',
+            { method: 'POST', body: JSON.stringify({ email, password }) }
+        );
+        handleLoginSuccess(data.data.tokens.accessToken, data.data.tokens.refreshToken);
+        setUser(data.data.user);
+    }, []);
+
+    const register = useCallback(async (name: string, email: string, password: string) => {
+        const data = await publicApi<{ success: boolean; data: { user: User; tokens: { accessToken: string; refreshToken: string } } }>(
+            '/api/auth/register',
+            { method: 'POST', body: JSON.stringify({ name, email, password }) }
+        );
+        handleLoginSuccess(data.data.tokens.accessToken, data.data.tokens.refreshToken);
+        setUser(data.data.user);
+    }, []);
+
+    const googleLogin = useCallback(async (idToken: string) => {
+        const data = await publicApi<{ success: boolean; data: { user: User; tokens: { accessToken: string; refreshToken: string } } }>(
+            '/api/auth/google',
+            { method: 'POST', body: JSON.stringify({ idToken }) }
+        );
+        handleLoginSuccess(data.data.tokens.accessToken, data.data.tokens.refreshToken);
+        setUser(data.data.user);
+    }, []);
+
+    const demoLogin = useCallback(async () => {
+        // Fetch demo credentials first
+        const creds = await publicApi<{ success: boolean; data: { email: string; password: string } }>('/api/auth/demo');
+        // Then login with those credentials
+        await login(creds.data.email, creds.data.password);
+    }, [login]);
+
+    const logout = useCallback(() => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        setToken(null);
+        setUser(null);
+    }, []);
+
+    return (
+        <AuthContext.Provider value={{ user, token, login, register, googleLogin, demoLogin, logout, isLoading }}>
+            {children}
+        </AuthContext.Provider>
+    );
+}
+
+export function useAuth() {
+    const context = useContext(AuthContext);
+    if (context === undefined) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
+}
+
+// Helper to decode JWT payload (without verification)
+function parseJwt(token: string): { userId: string; email: string } | null {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split('')
+                .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+        );
+        return JSON.parse(jsonPayload);
+    } catch {
+        return null;
+    }
+}
